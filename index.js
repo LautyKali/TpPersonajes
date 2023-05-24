@@ -27,8 +27,8 @@ app.get('/personaje/get/peso',async(req,res) =>{
     const personaje = await PersonajeServices.getByPeso()
     res.status(200).send(personaje)
 })
-app.get('/personaje/get/pelicula',async(req,res) =>{
-    const personaje = await PersonajeServices.getByPeli()
+app.get('/personaje/get/pelicula/:id',async(req,res) =>{
+    const personaje = await PersonajeServices.getByPeli(req.params.id)
     res.status(200).send(personaje)
 })
 
@@ -60,12 +60,12 @@ app.get('/pelicula&serie',async(req,res) =>{
     res.status(200).send(pelicula)
 })
 
-app.get('/pelicula&serie/get/:id',async(req,res) =>{
+app.get('/pelicula&serie/get/id/:id',async(req,res) =>{
     const pelicula = await PeliculaYSerieServices.getById(req.params.id)
     res.status(200).send(pelicula)
 })
 
-app.get('/pelicula&serie/get/:titulo',async(req,res) =>{
+app.get('/pelicula&serie/get/titulo/:titulo',async(req,res) =>{
     const pelicula = await PeliculaYSerieServices.getByTitulo(req.params.titulo)
     res.status(200).send(pelicula)
 })

@@ -124,13 +124,14 @@ export class PersonajeServices {
         }
         return returnEntity
     }
-    static getByPeli = async () =>{
+    static getByPeli = async (id) =>{
         let returnEntity = null; 
         console.log("Estoy en: GetByPeli");
         try {
             let pool = await sql.connect(config)
             let result = await pool.request()
-                .query("SELECT P.Imagen, P.Nombre, P.Id, PS.Id AS IdPelicula FROM PersonajeXPeli_Serie X INNER JOIN Personaje P on P.Id=X.fkPersonaje INNER JOIN Peli_Serie PS on PS.Id = X.fkPeli_Serie ORDER BY  PS.Id ASC");
+                .input("pId", sql.Int, id)
+                .query("SELECT P.Imagen, P.Nombre, P.Id, PS.Id AS IdPelicula FROM PersonajeXPeli_Serie X INNER JOIN Personaje P on P.Id=X.fkPersonaje INNER JOIN Peli_Serie PS on PS.Id = X.fkPeli_Serie WHERE PS.Id = @pId ORDER BY  P.Edad ASC");
             returnEntity = result.recordsets[0];
         } catch (error) {
             console.log(error);
@@ -147,7 +148,7 @@ export class PeliculaYSerieServices {
         try {
             let pool = await sql.connect(config)
             let result = await pool.request()
-                .query("SELECT Imagen, Titulo, FechaCreacion Id FROM Peli_Serie");
+                .query("SELECT Imagen, Titulo, FechaCreacion, Id FROM Peli_Serie");
             returnEntity = result.recordsets[0];
         } catch (error) {
             console.log(error);
@@ -162,7 +163,7 @@ export class PeliculaYSerieServices {
             let result = await pool.request()
                 .input("pId", sql.Int, id)
                 .query("SELECT P.Id as IdPersonaje,P.Nombre,P.Imagen,P.Edad,P.Peso,P.Historia,PS.Id as IdPeli_Serie,PS.Titulo,PS.Imagen,PS.FechaCreacion,PS.Calificacion FROM PersonajeXPeli_Serie X INNER JOIN Personaje P on P.Id=X.fkPersonaje INNER JOIN Peli_Serie PS on PS.Id = X.fkPeli_Serie WHERE X.fkPeli_Serie = @pId");
-            returnEntity = result.recordsets[0][0];
+            returnEntity = result.recordsets[0];
         } catch (error) {
             console.log(error);
         }
@@ -178,17 +179,17 @@ export class PeliculaYSerieServices {
             .input('Imagen', sql.NVarChar(4000), Imagen)
             .input('FechaCreacion', sql.Date, FechaCreacion)
             .input('Calificacion', sql.Float, Calificacion)
-            .query('INSERT INTO Peli_Serie (Titulo,Imagen,FechaCreacion,Calificacion) VALUES (@Titulo, @Imagen, @FechaCreacion, @Calificaion)')
+            .query('INSERT INTO Peli_Serie (Titulo,Imagen,FechaCreacion,Calificacion) VALUES (@Titulo, @Imagen, @FechaCreacion, @Calificacion)')
     }
 
     static update = async (pelicula_serie) => {
-        const { Titulo, Imagen, FechaCreacion, Calificacion } = pelicula_serie
+        const { Id, Titulo, Imagen, FechaCreacion, Calificacion } = pelicula_serie
         let returnEntity = null;
         console.log("Estoy en: update");
         try {
             let pool = await sql.connect(config)
             let result = await pool.request()
-                .input('pId', sql.Int, id)
+                .input('pId', sql.Int, Id)
                 .input('Titulo', sql.NVarChar(50), Titulo)
                 .input('Imagen', sql.NVarChar(4000), Imagen)
                 .input('FechaCreacion', sql.Date, FechaCreacion)
@@ -219,11 +220,12 @@ export class PeliculaYSerieServices {
 
     static getByTitulo = async (titulo) =>{
         console.log("Estoy en: GetByTitulo");
+        let returnEntity = null;
         try {
             let pool = await sql.connect(config)
             let result = await pool.request()
                 .input("pTitulo", sql.NVarChar(4000), titulo)
-                .query("SELECT Imagen, Titulo, Id FROM Peli_Serie PS WHERE PS.Tiutlo = @pTitulo");
+                .query("SELECT Imagen, Titulo, Id FROM Peli_Serie PS WHERE PS.Titulo = @pTitulo");
             returnEntity = result.recordsets[0];
         } catch (error) {
             console.log(error);
@@ -232,6 +234,7 @@ export class PeliculaYSerieServices {
     }
     static getByFechaCreacion = async () =>{
         console.log("Estoy en: GetByFechaCreacion");
+        let returnEntity=null;
         try {
             let pool = await sql.connect(config)
             let result = await pool.request()
