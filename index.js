@@ -14,9 +14,10 @@ app.get('/personaje/get/id/:id',async(req,res) =>{
     res.status(200).send(personaje)
 })
 
-app.get('/personaje/get/nombre/:nombre',async(req,res) =>{
-    const personaje = await PersonajeServices.getByNombre(req.params.nombre)
-    res.status(200).send(personaje)
+app.get('/personaje/get/',async(req,res) =>{
+    console.log("w");
+    const personaje = await PersonajeServices.getByNombre(req.query.nombre)
+    res.status(200).send(personaje);
 })
 
 app.get('/personaje/get/edad',async(req,res) =>{
